@@ -1,0 +1,188 @@
+#my internal documentacion is pretty sloppy just a heads up.
+protection = 0
+damage = 1
+x = 0
+y = 0
+coords = str(x) + str(y)
+moves = ['00S''00B' '00R' '00L']
+global invar
+def playerInput():
+    global invar
+    invar = input('*')
+    tempvar = invar.lower()
+    if invar[0:8] == 'straight':
+        straight(coords, x, y)
+        playerInput()
+    elif invar[0:4] == 'back':
+        back(coords, x, y)
+        playerInput()
+    elif invar[0:5] == 'right':
+        right(coords, x, y)
+        playerInput()
+    elif invar[0:4] == 'left':
+        left(coords, x, y)
+        playerInput()
+    elif invar[0:4] == 'take':
+        take(G)
+        playerInput()
+    elif invar[0:3] == 'buy':
+        tempvar = invar[4:]
+        buy(tempvar)
+        playerInput()
+    elif invar[0:4] == 'sell':
+         tempvar = invar[5:]
+         sell(tempvar)
+         playerInput()
+    elif invar[0:5] == 'equip':
+        tempvar = invar[6:]
+        equip(tempvar)
+        playerInput()
+    elif invar[0:7] == 'unequip':
+        tempvar = invar[8:]
+        unequip(tempvar)
+        playerInput()
+def commands():
+    #need to put in the new commands. 
+        print ('These are the commands')
+        print ("""!!!!Do not mis type anything or you will
+have to reset the program!!!!""")
+        print (' straight     back')
+        print (' right        left')
+commands()
+def straight(tempCoords, tempx, tempy):
+    strVar = tempCoords + 'S'
+    tempvar = tempCoords in moves
+    if tempvar == False:
+        global y
+        global coords
+
+        y = tempy + 1
+        coords = str(tempx)+ str(y)
+        print('you are at ' + coords)
+def back(tempCoords, tempx, tempy):
+    strVar = tempCoords + 'B'
+    tempvar = tempCoords in moves
+    if tempvar == False:
+        global y
+        global coords
+        y = tempy - 1
+        coords = str(tempx) + str(y)
+        print ('you are at ' + coords)
+def right(tempCoords, tempx, tempy):
+    strVar = tempCoords + 'R'
+    tempvar = tempCoords in moves
+    if tempvar == False:
+        global x
+        global coords
+        x = tempx + 1
+        coords = str(x) + str(tempy)
+        print ('you are at ' + coords)
+
+def left(tempCoords, tempx, tempy):
+    strVar = tempCoords + 'L'
+    tempvar = tempCoords in moves
+    if tempvar == False:
+        global x
+        global coords
+        x = tempx - 1
+        coords = str(x) + str(tempy)
+        print ('you are at ' + coords)
+
+#movement stops here and currency starts
+G = 100
+Gold = str(G)
+ammount = ['0']
+def take (tempG):
+    strVar = tempG
+    tempvar = tempG in ammount
+    if tempvar == False:
+        global G
+        global Gold
+        G = tempG + 1
+        Gold = str(tempG)
+        print ('You now have ' + str(G) + ' gold')
+
+#shop starts here.
+shopInv = {'shield': {'examine':'this is a shield', 'cost':2, 'sell':1, 'protection':1}, 
+        'sword': {'examine':'this is a sword', 'cost':2, 'sell':1, 'attack':1,'damage':1}}
+Inv = {}
+equiped = {}
+def buy(item):
+    tempVar = item in shopInv
+    global G
+    global Inv
+    if tempVar == True:
+        if G >= shopInv[item]['cost']:
+            G = G - shopInv[item]['cost']
+            print('A ' + item +' has been added to your Inventory.')
+            print('You have ' + str(G) + ' gold left.')
+            Inv[item] = shopInv[item]
+        else:
+            print("You don't have enough money.")
+    else:
+        print("Shop doesn't have that item.")
+
+def sell(item):
+    tempvar = item in shopInv
+    global G
+    if tempvar == True:
+        tempvar = item in Inv
+        if tempvar == True:
+            G = G + shopInv[item]['sell']
+            print('you have sold a ' + item + '.')
+            del Inv[item]
+            print('You have ' + str(G) + ' gold left.')
+        else:
+            print('You do not have that item.')
+    else:
+        print('Shop does not want this item.')
+
+        
+#Inventory commands.
+def equip(item):
+    tempvar = item in Inv
+    global damage
+    global protection
+    global Inv
+    global equiped
+    if tempvar == True:
+        tempvar = item in Inv
+        if tempvar == True:
+            equiped[item] = Inv[item]
+            print('You have equiped a ' +item)
+            if invar[0:12] == 'equip shield':
+                del Inv['shield']
+                protection = protection + shopInv['shield']['protection']
+            elif invar[0:11] == 'equip sword':
+                del Inv['sword']
+                damage = damage + shopInv['sword']['damage']
+            print ('you have ' + str(protection) + ' protection and ' + str(damage) + ' damage.')
+        else:
+            print('You do not have that item in your inventory.')
+    else:
+        print('You do not have that item.')
+
+def unequip(item):
+    tempvar = item in equiped
+    global damage
+    global protection
+    global Inv
+    global equiped
+    if tempvar == True:
+        if tempvar == True:
+            Inv[item] = equiped[item]
+            print ('you have unequiped a ' +item)
+            if invar[0:14] == 'unequip shield':
+                Inv[item] = equiped[item]
+                protection = protection - shopInv['shield']['protection']
+            elif invar[0:13] == 'unequip sword':
+                Inv[item] =  equiped[item]
+                damage = damage - shopInv['sword']['damage']
+            print ('you have ' + str(protection) + ' protection and ' + str(damage) + ' damage.')
+        else:
+            print('You do not have that item equiped.')
+    else:
+        print('Item not Equiped.')
+
+        
+playerInput()
